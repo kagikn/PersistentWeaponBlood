@@ -24,6 +24,14 @@ using System.Linq;
 namespace PersistentWeaponBlood
 {
 #if SHVDN
+    public static class Commands
+    {
+        public static void CleanAllPlayerMeleeWeapons() => PersistentWeaponBlood.CleanAllPlayerMeleeWeapons();
+        public static void CleanCurrentPlayerMeleeWeapon() => PersistentWeaponBlood.CleanCurrentPlayerMeleeWeapon();
+    }
+#endif
+
+#if SHVDN
     // No possible Script.Wait calls during the OnTick call, so specify NoScriptThread to true to avoid thread switching at all
     // Since SHVDN use the TLS swap trick to avoid non-negligible cpu-cycle comsuption by thread switch starting from v3.7.0,
     // probably NoScriptThread has non-negligible performance boost only in v3.6.0 aside from thread switching that happens twice per tick (right before OnTick and right after OnTick)
