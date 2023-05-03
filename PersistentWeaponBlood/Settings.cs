@@ -7,6 +7,7 @@ using Rage;
 #endif
 
 using System;
+using System.Globalization;
 
 namespace PersistentWeaponBlood
 {
@@ -26,6 +27,13 @@ namespace PersistentWeaponBlood
         internal Configs(string iniFilePath)
         {
 #if SHVDN
+            // Current culture can vary by the user setting in SHVDN scripts when they got loaded
+            // RPH changes the culture of the default app domain to "en-US" and sets add domains for plugins to it, so you should test the current culture without having RPH loaded
+            // No need to do this hack in RPH version since InitializationFile of RPH always uses CultureInfo.InvariantCulture as the format provider when it reads some values
+            // For writing, InitializationFile of RPH uses WritePrivateProfileStringA so CultureInfo.CurrentCulture is irrelevant, wtf?
+            var originalCulture = CultureInfo.CurrentCulture;
+            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
             var internalSettingReader = ScriptSettings.Load(iniFilePath);
 
             var targetPedsForWaterCleaningForPedSubmersionString = internalSettingReader.GetValue("WaterCleaningForPedSubmersion", "TargetPeds", "AllPeds");
@@ -34,6 +42,8 @@ namespace PersistentWeaponBlood
             PedSubmersionLevelThreshold = internalSettingReader.GetValue("WaterCleaningForPedSubmersion", "SubmersionLevelThreshold", 0.875f);
 
             RegisterCheatCodes = internalSettingReader.GetValue("ClearWeaponBloodCommands", "RegisterCheatCodes", true);
+
+            CultureInfo.CurrentCulture = originalCulture;
 #endif
 
 #if RPH

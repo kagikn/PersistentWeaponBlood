@@ -56,8 +56,6 @@ namespace PersistentWeaponBlood
 
             // While you can load an assembly in a subdirectory of the specified plugin folder, you can't find the folder the assembly was loaded from (at least with Assembly.Location or Assembly.CodeBase)
             // RPH should have provide ways to retrieve filenames and directories of plugins just in case users bother to load them from subdirectories of the specified plugin folder!
-
-            // AppDomain.CurrentDomain.BaseDirectory will specify the specified plugin folder in RPH plugins
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(typeof(EntryPoint).Assembly.Location);
             var iniFilePathRelative = Path.Combine("Plugins", fileNameWithoutExtension + ".ini");
 
@@ -88,7 +86,6 @@ namespace PersistentWeaponBlood
             }
 
             string iniFilePath = Path.Combine(BaseDirectory, Path.GetFileNameWithoutExtension(Filename) + ".ini");
-            GTA.UI.Notification.Show(iniFilePath.ToString());
             _configs = new Configs(iniFilePath);
 
             Tick += OnTick;
