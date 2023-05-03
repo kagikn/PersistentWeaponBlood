@@ -101,15 +101,15 @@ namespace PersistentWeaponBlood
     unsafe struct ItemInfo
     {
         [FieldOffset(0x0)]
-        public ulong* vTable;
+        internal ulong* vTable;
         [FieldOffset(0x10)]
-        public uint nameHash;
+        internal uint nameHash;
         [FieldOffset(0x14)]
-        public uint modelHash;
+        internal uint modelHash;
         [FieldOffset(0x18)]
-        public uint audioHash;
+        internal uint audioHash;
         [FieldOffset(0x1C)]
-        public uint slot;
+        internal uint slot;
 
         internal uint GetClassNameHash()
         {
@@ -173,7 +173,7 @@ namespace PersistentWeaponBlood
             WeaponSlotHashDictionaryForNameHash = new();
         }
 
-        public static void SetUpStaticCamoDiffuseTexIdxsProperties(IntPtr weaponAndAmmoInfoArrayAddress, int weaponInfoCamoDiffuseTexIdxsOffset)
+        internal static void SetUpStaticCamoDiffuseTexIdxsProperties(IntPtr weaponAndAmmoInfoArrayAddress, int weaponInfoCamoDiffuseTexIdxsOffset)
         {
             if (weaponAndAmmoInfoArrayAddress == null)
             {
@@ -234,8 +234,8 @@ namespace PersistentWeaponBlood
             }
         }
 
-        public static HashSet<WeaponHash> WeaponHashesWithCamoDiffuseTexIdxs { get; private set; }
-        public static Dictionary<WeaponHash, uint> WeaponSlotHashDictionaryForNameHash { get; private set; }
+        internal static HashSet<WeaponHash> WeaponHashesWithCamoDiffuseTexIdxs { get; private set; }
+        internal static Dictionary<WeaponHash, uint> WeaponSlotHashDictionaryForNameHash { get; private set; }
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 0x20)]

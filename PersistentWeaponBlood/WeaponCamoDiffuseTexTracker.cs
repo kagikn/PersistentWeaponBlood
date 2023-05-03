@@ -18,31 +18,31 @@ using System.Runtime.InteropServices;
 namespace PersistentWeaponBlood
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct WeaponHashAndSlotHashPair
+    internal struct WeaponHashAndSlotHashPair
     {
-        public WeaponHash nameHash;
-        public uint slotHash;
+        internal WeaponHash nameHash;
+        internal uint slotHash;
 
-        public WeaponHashAndSlotHashPair(WeaponHash nameHash, uint slotHash)
+        internal WeaponHashAndSlotHashPair(WeaponHash nameHash, uint slotHash)
         {
             this.nameHash = nameHash;
             this.slotHash = slotHash;
         }
     }
 
-    public sealed class WeaponCamoDiffuseTexTracker
+    internal sealed class WeaponCamoDiffuseTexTracker
     {
-        public static HashSet<WeaponHash>? _weaponHashesWithCamoDiffuseTexIdxsBinaryMap;
-        public static Dictionary<WeaponHash, uint>? _weaponSlotHashDictForNameHash;
+        internal static HashSet<WeaponHash>? _weaponHashesWithCamoDiffuseTexIdxsBinaryMap;
+        internal static Dictionary<WeaponHash, uint>? _weaponSlotHashDictForNameHash;
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        public struct CamoDiffuseTexIdTrackerTuple
+        internal struct CamoDiffuseTexIdTrackerTuple
         {
-            public IntPtr weaponInventoryItemAddr;
-            public uint slotHash;
-            public byte camoDiffuseTexId;
+            internal IntPtr weaponInventoryItemAddr;
+            internal uint slotHash;
+            internal byte camoDiffuseTexId;
 
-            public CamoDiffuseTexIdTrackerTuple(IntPtr weaponInventoryItemAddr, uint slotHash, byte camoDiffuseTexId)
+            internal CamoDiffuseTexIdTrackerTuple(IntPtr weaponInventoryItemAddr, uint slotHash, byte camoDiffuseTexId)
             {
                 this.weaponInventoryItemAddr = weaponInventoryItemAddr;
                 this.slotHash = slotHash;
@@ -50,22 +50,22 @@ namespace PersistentWeaponBlood
             }
         }
 
-        public Ped Ped { get; }
+        internal Ped Ped { get; }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        public readonly struct WeaponHashAndCamoTexIdIndexTuple
+        internal readonly struct WeaponHashAndCamoTexIdIndexTuple
         {
-            public readonly WeaponHash weaponHash;
-            public readonly byte camoTexIdIndex;
+            internal readonly WeaponHash weaponHash;
+            internal readonly byte camoTexIdIndex;
 
-            public WeaponHashAndCamoTexIdIndexTuple(WeaponHash weaponHash, byte camoTexIdIndex)
+            internal WeaponHashAndCamoTexIdIndexTuple(WeaponHash weaponHash, byte camoTexIdIndex)
             {
                 this.weaponHash = weaponHash;
                 this.camoTexIdIndex = camoTexIdIndex;
             }
         }
 
-        public WeaponHashAndCamoTexIdIndexTuple[] PoppedWeaponHashAndCamoTexIdIndexTupleSinceLastUpdate
+        internal WeaponHashAndCamoTexIdIndexTuple[] PoppedWeaponHashAndCamoTexIdIndexTupleSinceLastUpdate
         {
             get
             {
@@ -78,17 +78,19 @@ namespace PersistentWeaponBlood
             }
         }
 
-        public delegate void OnWatchedWeaponRemovedFromInventoryDelegate(Ped ped, WeaponHashAndCamoTexIdIndexTuple[] poppedWeapons, WeaponCamoDiffuseTexTracker sender);
+        internal delegate void OnWatchedWeaponRemovedFromInventoryDelegate(Ped ped, WeaponHashAndCamoTexIdIndexTuple[] poppedWeapons, WeaponCamoDiffuseTexTracker sender);
 
-        public event OnWatchedWeaponRemovedFromInventoryDelegate? OnWatchedWeaponRemovedFromInventory;
+        internal event OnWatchedWeaponRemovedFromInventoryDelegate? OnWatchedWeaponRemovedFromInventory;
 
-        public delegate void OnNoWatchedWeaponsLeftDelegate(Ped ped, WeaponCamoDiffuseTexTracker sender);
+        internal delegate void OnNoWatchedWeaponsLeftDelegate(Ped ped, WeaponCamoDiffuseTexTracker sender);
 
-        public event OnNoWatchedWeaponsLeftDelegate? OnNoWatchedWeaponsLeft;
+        internal event OnNoWatchedWeaponsLeftDelegate? OnNoWatchedWeaponsLeft;
 
-        public delegate void OnPedRemovedDelegate(Ped ped, WeaponCamoDiffuseTexTracker sender);
+        internal delegate void OnPedRemovedDelegate(Ped ped, WeaponCamoDiffuseTexTracker sender);
 
-        public event OnPedRemovedDelegate? OnPedRemoved;
+        internal event OnPedRemovedDelegate? OnPedRemoved;
+
+        internal Func<Ped, bool>? PredicateToCleanAllWeapons { get; set; }
 
         private List<WeaponHashAndCamoTexIdIndexTuple>? _poppedWeaponHashesSinceLastUpdate;
         private readonly Dictionary<WeaponHash, CamoDiffuseTexIdTrackerTuple> _camoDiffuseTexIdCache;
@@ -99,7 +101,7 @@ namespace PersistentWeaponBlood
 
         private readonly List<WeaponHashAndCamoTexIdIndexTuple> _requestedCamoTexIds = new();
 
-        public static void Init(HashSet<WeaponHash> weaponHashesWithCamoDiffuseTexIdxsBinaryMap, Dictionary<WeaponHash, uint> weaponSlotHashDictionaryForNameHash)
+        internal static void Init(HashSet<WeaponHash> weaponHashesWithCamoDiffuseTexIdxsBinaryMap, Dictionary<WeaponHash, uint> weaponSlotHashDictionaryForNameHash)
         {
             _weaponHashesWithCamoDiffuseTexIdxsBinaryMap = weaponHashesWithCamoDiffuseTexIdxsBinaryMap;
             _weaponSlotHashDictForNameHash = weaponSlotHashDictionaryForNameHash;
@@ -112,7 +114,7 @@ namespace PersistentWeaponBlood
             _lastWeaponPropWithCamoTexIdxsCache = lastWeaponPropWithCamoTexIdxs;
         }
 
-        public void Update()
+        internal void Update()
         {
             if (_FiredOnPedRemovedEvent)
             {
@@ -148,6 +150,12 @@ namespace PersistentWeaponBlood
                 _poppedWeaponHashesSinceLastUpdate = PopRemovedWeaponHashesFromInventoryTracker(cPedInventoryAddress);
                 SetRequestedCamoDiffuseTexIdxs(cPedInventoryAddress, _requestedCamoTexIds);
 
+                if (PredicateToCleanAllWeapons != null && PredicateToCleanAllWeapons(ped))
+                {
+                    _camoDiffuseTexIdCache.Clear();
+                    return;
+                }
+
                 var currentWeaponProp = ped.GetCurrentWeaponProp();
                 if (currentWeaponProp == null)
                 {
@@ -159,7 +167,6 @@ namespace PersistentWeaponBlood
                 {
                     return;
                 }
-
 
                 if (_camoDiffuseTexIdCache.TryGetValue(curWeapHashOfWeaponProp, out var desiredCamoDuffseTexIdTuple))
                 {
@@ -199,11 +206,6 @@ namespace PersistentWeaponBlood
             }
         }
 
-        // different weapon and registered -> store last weap hash and restore camo
-        // different weapon and not registered -> store last weap hash and add entry and remember including camo id
-        // same weapon and not registered -> add entry and remember including camo id
-        // same weapon and registered -> update camo id
-
         private void FireRequestedEvents()
         {
             var ped = Ped;
@@ -217,7 +219,6 @@ namespace PersistentWeaponBlood
                 OnNoWatchedWeaponsLeft?.Invoke(ped, this);
             }
         }
-
         private bool AddCamoDiffuseTexIdCacheEntryForWeaponHash(IntPtr cPedInventoryAddress, WeaponHash hash, byte camoDiffuseTexutreId)
         {
             unsafe
@@ -240,7 +241,7 @@ namespace PersistentWeaponBlood
             }
         }
 
-        public void RequestCamoDiffuseTexIdForWeaponHash(WeaponHash hash, byte camoDiffuseTexutreId)
+        internal void RequestCamoDiffuseTexIdForWeaponHash(WeaponHash hash, byte camoDiffuseTexutreId)
         {
             _requestedCamoTexIds.Add(new WeaponHashAndCamoTexIdIndexTuple(hash, camoDiffuseTexutreId));
         }
@@ -279,7 +280,7 @@ namespace PersistentWeaponBlood
             }
         }
 
-        public static WeaponCamoDiffuseTexTracker? Create(Ped ped, Dictionary<WeaponHash, byte>? desiredCamoTexIds = null)
+        internal static WeaponCamoDiffuseTexTracker? Create(Ped ped, Dictionary<WeaponHash, byte>? desiredCamoTexIds = null)
         {
             unsafe
             {

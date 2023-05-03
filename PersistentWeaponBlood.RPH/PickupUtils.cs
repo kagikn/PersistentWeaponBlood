@@ -48,13 +48,13 @@ namespace PersistentWeaponBlood
             public ushort itemCount;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool IsValid(uint index)
+            internal bool IsValid(uint index)
             {
                 return Mask(index) != 0;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool IsHandleValid(int handle)
+            internal bool IsHandleValid(int handle)
             {
                 uint handleUInt = (uint)handle;
                 var index = handleUInt >> 8;
@@ -62,25 +62,25 @@ namespace PersistentWeaponBlood
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public ulong GetAddress(uint index)
+            internal ulong GetAddress(uint index)
             {
                 return ((Mask(index) & (poolStartAddress + index * itemSize)));
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public IntPtr GetAddressFromHandle(int handle)
+            internal IntPtr GetAddressFromHandle(int handle)
             {
                 return IsHandleValid(handle) ? new IntPtr((long)GetAddress((uint)handle >> 8)) : IntPtr.Zero;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public int GetGuidHandleByIndex(uint index)
+            internal int GetGuidHandleByIndex(uint index)
             {
                 return IsValid(index) ? (int)((index << 8) + GetCounter(index)) : 0;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public int GetGuidHandleFromAddress(ulong address)
+            internal int GetGuidHandleFromAddress(ulong address)
             {
                 if (address < poolStartAddress || address >= poolStartAddress + size * itemSize)
                     return 0;
@@ -115,7 +115,7 @@ namespace PersistentWeaponBlood
             }
         }
 
-        public static Rage.Object[] GetPickupObjectHandles()
+        internal static Rage.Object[] GetPickupObjectHandles()
         {
             var pickupObjectPoolPtrOfPtrAddress = Memory.PickupObjectPoolPointerOfPointerAddress;
             var fwScriptGuidPoolPointerOfPointerAddress = Memory.FwScriptGuidPoolPointerOfPointerAddress;
@@ -164,7 +164,7 @@ namespace PersistentWeaponBlood
                 _createGuidFuncAddress = createGuidFuncAddress;
             }
 
-            public void Run()
+            internal void Run()
             {
                 unsafe
                 {

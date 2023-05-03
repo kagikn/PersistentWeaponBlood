@@ -22,13 +22,11 @@ namespace PersistentWeaponBlood
 {
     public static class AssemblyResolutionUtils
     {
-        //#if SHVDN
         public static Assembly MyResolveEventHandler(object sender, ResolveEventArgs args)
         {
             var exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
             return Assembly.LoadFrom(Path.Combine(exePath, "EasyHook.dll"));
         }
-//#endif
 #if RPH
         public static Assembly LoadEasyHook()
         {
@@ -38,10 +36,10 @@ namespace PersistentWeaponBlood
 #endif
     }
 
-    public static unsafe class Memory
+    internal static unsafe class Memory
     {
-        public readonly static delegate* unmanaged[Stdcall]<IntPtr, IntPtr, IntPtr, void> _origRewardPedWithWeaponFunc;
-        public readonly static LocalHook? _hookedrewardPedWithWeaponFunc;
+        internal readonly static delegate* unmanaged[Stdcall]<IntPtr, IntPtr, IntPtr, void> _origRewardPedWithWeaponFunc;
+        internal readonly static LocalHook? _hookedrewardPedWithWeaponFunc;
 
         static readonly delegate* unmanaged[Stdcall]<IntPtr> _getLocalPlayerPedAddressFunc;
 
@@ -61,8 +59,8 @@ namespace PersistentWeaponBlood
         static readonly IntPtr createGuidFuncAddress;
 #endif
 
-        public delegate void RewardPedWithWeaponDelegate(IntPtr cPickupRewardWeaponPtr, IntPtr cPickupPtrOfWeaponToRewardWith, IntPtr cPedPtrToReward);
-        public static void RewardPedWithWeaponHook(IntPtr cPickupRewardWeaponPtr, IntPtr cPickupPtrOfWeaponToRewardWith, IntPtr cPedPtrToReward)
+        internal delegate void RewardPedWithWeaponDelegate(IntPtr cPickupRewardWeaponPtr, IntPtr cPickupPtrOfWeaponToRewardWith, IntPtr cPedPtrToReward);
+        internal static void RewardPedWithWeaponHook(IntPtr cPickupRewardWeaponPtr, IntPtr cPickupPtrOfWeaponToRewardWith, IntPtr cPedPtrToReward)
         {
             // Note: No GtaThread instances should be allowed to run when this method is called, so there's no native function calls here
             var cPickupRewardWeaponPtrNative = (CPickupRewardWeapon*)cPickupRewardWeaponPtr;
@@ -121,7 +119,7 @@ namespace PersistentWeaponBlood
             }
         }
 
-        public static int GetProcessMainThreadId()
+        internal static int GetProcessMainThreadId()
         {
             long lowestStartTime = long.MaxValue;
             ProcessThread? lowestStartTimeThread = null;
@@ -230,22 +228,22 @@ namespace PersistentWeaponBlood
             _hookedrewardPedWithWeaponFunc?.ThreadACL.SetInclusiveACL(new int[] { GetProcessMainThreadId() });
         }
 
-        public static void OnUnload()
+        internal static void OnUnload()
         {
             _hookedrewardPedWithWeaponFunc?.Dispose();
         }
 
-        public static List<WeaponHashAndCamoTexIdIndexTuple> DesiredCamoDiffusesForLocalPlayerPed
+        internal static List<WeaponHashAndCamoTexIdIndexTuple> DesiredCamoDiffusesForLocalPlayerPed
         {
             get => desiredCamoDiffusesForLocalPlayerPed;
         }
 
-        public static Dictionary<IntPtr, List<WeaponHashAndCamoTexIdIndexTuple>>? DesiredCamoDiffusesFallback
+        internal static Dictionary<IntPtr, List<WeaponHashAndCamoTexIdIndexTuple>>? DesiredCamoDiffusesFallback
         {
             get => desiredCamoDiffusesFallback;
         }
 
-        public static HashSet<WeaponHash> WeaponHashesWithCamoDiffuseTexIdxsBinaryMap
+        internal static HashSet<WeaponHash> WeaponHashesWithCamoDiffuseTexIdxsBinaryMap
         {
             get => weaponHashesWithCamoDiffuseTexIdxsBinaryMap;
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -72,7 +72,7 @@ namespace PersistentWeaponBlood
             private int index;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public EnumeratorObject(atArray<T> arr)
+            internal EnumeratorObject(atArray<T> arr)
             {
                 array = arr;
                 index = -1;

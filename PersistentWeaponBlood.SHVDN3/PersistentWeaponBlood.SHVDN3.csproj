@@ -18,7 +18,7 @@
     <RepositoryUrl>https://github.com/kagikn/PersistentWeaponBlood</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/alexguirre/PersistentWeaponBlood/releases</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/alexguirre/PersistentWeaponBlood/relea</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>A script for ScriptHookVDotNet keeps weapon blood states (strictly CamoDiffuseTexIdx values) and restores when Peds switch to weapons with modified blood states.</Description>
     <Copyright>Copyright © 2023 kagikn</Copyright> 
