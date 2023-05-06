@@ -50,11 +50,13 @@ namespace PersistentWeaponBlood
         private static void PostTickerWithLongMessageToTheFeed(string text, bool isImportant, bool cacheMessage = true)
         {
 #if SHVDN
+            // For SHVDN version, I made this custom version from SHVDN one (which is basically implemented by me too, see #833 of SHVDN repo) just because the cache message parameter is needed
             Function.Call(Hash.BEGIN_TEXT_COMMAND_THEFEED_POST, "CELL_EMAIL_BCON");
             PushLongString(text);
             Function.Call(Hash.END_TEXT_COMMAND_THEFEED_POST_TICKER, isImportant, cacheMessage);
 #endif
 #if RPH
+            // For RPH version, I had to make this custom method because Game.DisplayNotification doesn't consider non-ASCII characters and it carelessly uses string.Length and not parsing UTF-8 strings at all before splitting into chunks
             NativeFunction.Natives.BEGIN_TEXT_COMMAND_THEFEED_POST("CELL_EMAIL_BCON");
             PushLongString(text);
             NativeFunction.Natives.END_TEXT_COMMAND_THEFEED_POST_TICKER(isImportant, cacheMessage);
