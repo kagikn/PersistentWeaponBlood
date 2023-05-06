@@ -29,21 +29,22 @@ namespace PersistentWeaponBlood
 #if SHVDN
             // Current culture can vary by the user setting in SHVDN scripts when they got loaded
             // RPH changes the culture of the default app domain to "en-US" and sets add domains for plugins to it, so you should test the current culture without having RPH loaded
-            // No need to do this hack in RPH version since InitializationFile of RPH always uses CultureInfo.InvariantCulture as the format provider when it reads some values
+            // No need to do a hack like changing the current culture or getting values as string first and parsing string values into float ones with InvariantCulture later in RPH version
+            // since InitializationFile of RPH always uses CultureInfo.InvariantCulture as the format provider when it reads some values
             // For writing, InitializationFile of RPH uses WritePrivateProfileStringA so CultureInfo.CurrentCulture is irrelevant, wtf?
-            var originalCulture = CultureInfo.CurrentCulture;
-            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-
             var internalSettingReader = ScriptSettings.Load(iniFilePath);
 
             var targetPedsForWaterCleaningForPedSubmersionString = internalSettingReader.GetValue("WaterCleaningForPedSubmersion", "TargetPeds", "AllPeds");
             TargetPedsForWaterCleaningForPedSubmersion = ParseTargetPedsEnumString(targetPedsForWaterCleaningForPedSubmersionString);
 
-            PedSubmersionLevelThreshold = internalSettingReader.GetValue("WaterCleaningForPedSubmersion", "SubmersionLevelThreshold", 0.875f);
+            PedSubmersionLevelThreshold = 0.875f;
+            string tempPedSubmersionLevelThresholdValStr = internalSettingReader.GetValue("WaterCleaningForPedSubmersion", "SubmersionLevelThreshold", string.Empty);
+            if (float.TryParse(tempPedSubmersionLevelThresholdValStr, NumberStyles.Number, CultureInfo.InvariantCulture, out float parsedPedSubmersionLevelThreshold))
+            {
+                PedSubmersionLevelThreshold = parsedPedSubmersionLevelThreshold;
+            }
 
             RegisterCheatCodes = internalSettingReader.GetValue("ClearWeaponBloodCommands", "RegisterCheatCodes", true);
-
-            CultureInfo.CurrentCulture = originalCulture;
 #endif
 
 #if RPH
